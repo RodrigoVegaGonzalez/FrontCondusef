@@ -1,0 +1,40 @@
+.h1{
+    width: 100%;
+}
+.Cuestionario{
+   display: flex;
+   flex-wrap: wrap;
+   justify-content:flex-start;
+   
+}
+
+.Cuestionario div{
+    margin: 1em;
+    width: 250px;
+    text-align: center;
+}
+
+.Cuestionario select{
+    max-width: 300px;
+}
+
+label{
+    min-width: 50px;
+}
+
+.Cuestionario label{
+   
+    margin: .5em;
+}
+
+.Login{
+    width: 600px;
+    background-color: grey;
+}
+/* 
+.Home{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} */
+
