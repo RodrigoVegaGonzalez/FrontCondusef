@@ -1,12 +1,17 @@
-'use client'
-import {React,useState} from "react";
-import { useRouter } from 'next/router';
+"use client";
+
+import {React,useState, useContext} from "react";
+import { useRouter } from 'next/navigation';
+import AuthContext   from '../context/AuthContext';
 
 const Login = () => {
+    const API_URL = process.env.NEXT_PUBLIC_AMBIENTE;
+    const { login } = useContext(AuthContext);
+    //const token = localStorage.getItem('token');
+    const router = useRouter();
     const [usuario, setUsuario] = useState("");
     const [password,setPassword] = useState("");
     const [error,setError] = useState(null)
-    const router = useRouter();
     const CambioUsuario = (e) =>{
         setUsuario(e.target.value);
         setError(e.target.value ? null : 'Este campo es requerido');
@@ -22,12 +27,13 @@ const Login = () => {
             "password":password
         }
         try{
-            const response = await fetch('https://localhost:7030/api/Login',{
+            const response = await fetch(`${API_URL}/Login`,{
                 method:'POST',
                 headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify(Enviar)
+                  body: JSON.stringify(Enviar),
+                  credentials: 'include'
 
             });
 
@@ -35,13 +41,16 @@ const Login = () => {
                 const data = await response.json();
                 console.log('Datos enviados correctamente');
                 console.log(data)
-                router.push('/home');
+                let id = data.token
+                login(data.token);
+                localStorage.setItem('token', data.token); 
+                document.cookie = `token=${data.token}; path=/`;
+                router.push(`/home`);
                 // Puedes redirigir al usuario o mostrar un mensaje de éxito
               } else {
                 // La petición falló
                 alert("Usuario o contraseña incorrecta");
                 console.log('Error al enviar datos'+response);
-                // Puedes mostrar un mensaje de error al usuario
               }
 
 
@@ -53,8 +62,10 @@ const Login = () => {
     }
   
     return (
+        <div className="Home">
+            <h1>Inicia Sesión</h1>
         <div className="Login Container">
-            <div >
+            <div className="login-element">
             <label>Usuario</label>
             <input
             type="email"
@@ -65,7 +76,7 @@ const Login = () => {
             onChange={CambioUsuario} required/>
             {error && <div className="error">{error}</div>}
             </div>
-            <div>
+            <div className="login-element">
                 <label>Contraseña</label>
             <input
             type="password"
@@ -75,14 +86,14 @@ const Login = () => {
             onChange={CambioPassword}
             />
             </div>
-            <div>
+            <div className="btn-element">
                 <button 
                 className="btn btn-primary"
                 onClick={Enviar}
                 >Enviar</button>
             </div>
         </div>
-            
+        </div>
     )
 }
 

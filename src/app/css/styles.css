@@ -1,3 +1,9 @@
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
 .h1{
     width: 100%;
 }
@@ -29,12 +35,26 @@ label{
 
 .Login{
     width: 600px;
-    background-color: grey;
+   
 }
-/* 
+
+.Loign button{
+   text-align: center;
+}
+
+.login-element{
+    margin: 2em;
+}
+
+.btn-element{
+    text-align: center;
+}
+
 .Home{
     display: flex;
     justify-content: center;
     align-items: center;
-} */
+    flex-direction: column;
+    /* height: 100%; */
+}
 

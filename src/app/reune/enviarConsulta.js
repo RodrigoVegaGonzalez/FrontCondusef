@@ -1,18 +1,19 @@
 
 import '../css/styles.css'
-import React,{useState,useEffect} from "react";
+import React,{useState,useEffect,useContext} from "react";
 import { useRouter } from 'next/navigation';
+import AuthContext from '../context/AuthContext';
 
 const EnviarConsulta = () =>{
     const router = useRouter();
-    const token = localStorage.getItem('token');
-    
+    const { token } = useContext(AuthContext);
+    //console.log("Ambiente",process.env.NEXT_PUBLIC_AMBIENTE)
 
-    useEffect(() => {
-        if (!token) {
-          router.push('/');
-        }
-      }, []);
+    // useEffect(() => {
+    //     if (!token) {
+    //       router.push('/');
+    //     }
+    //   }, []);
 
     const Trimestre = [{
         name:"Enero-Marzo",

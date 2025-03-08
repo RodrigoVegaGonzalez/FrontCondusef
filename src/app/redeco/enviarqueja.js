@@ -1,7 +1,41 @@
 "use client";
-import React,{useState} from "react";
+import React,{useState,useEffect,useContext} from "react";
+import { useRouter } from 'next/navigation';
 import '../css/styles.css'
+import AuthContext from '../context/AuthContext';
+
 const enviarqueja = () =>{
+  
+  const API_URL = process.env.NEXT_PUBLIC_AMBIENTE;
+  const router = useRouter();
+  //const [token, setToken] = useState(null);
+  const { token } = useContext(AuthContext);
+  
+  // useEffect(() => {
+  //   // Acceder a localStorage solo dentro de useEffect
+    
+
+  //   if (!token) {
+  //     router.push('/');
+  //   }
+
+  //   // const validarToken = () => {
+  //   //   fetch(`${API_URL}/Login`, {
+  //   //     method: 'GET',
+  //   //     headers: {
+  //   //       'Authorization': `Bearer ${token}`}
+  //   //     }
+  //   //   ).then(resp => {
+  //   //     if (resp.status === 401) {
+  //   //       localStorage.removeItem('token');
+  //   //       router.push('/');
+  //   //     }
+  //   //   })}
+
+      
+
+  // }, [token,router]);
+  
 
   const meses = [
     { id: 1, nombre: "Enero" },
@@ -83,120 +117,7 @@ const enviarqueja = () =>{
       ]
   };
 
-    const productos = {
-      "products": [
-          {
-              "productId": "026911801257",
-              "product": "Crédito Simple (Auto)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911811258",
-              "product": "Crédito Simple (CGH)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911821259",
-              "product": "Crédito Simple (CGP)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911821260",
-              "product": "Crédito Cuenta Corriente (CGP)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911831261",
-              "product": "Crédito Simple (CN)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911831262",
-              "product": "Crédito Cuenta Corriente (CN)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911841263",
-              "product": "Crédito Simple (CE)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911841264",
-              "product": "Crédito Cuenta Corriente (CE)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911851265",
-              "product": "Crédito Simple (CH)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911861266",
-              "product": "Crédito Simple (CAM)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911861267",
-              "product": "Crédito Cuenta Corriente (CAM)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911871268",
-              "product": "Crédito Simple (CP)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911871269",
-              "product": "Crédito Cuenta Corriente (CP)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911881270",
-              "product": "Crédito Simple (CPYME)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911881271",
-              "product": "Crédito Cuenta Corriente (CPYME)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911891272",
-              "product": "Crédito Simple (CSG)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911891273",
-              "product": "Crédito Cuenta Corriente (CSG)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911901274",
-              "product": "Crédito Simple (CPHA)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911911275",
-              "product": "Crédito Simple (CPR)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911941280",
-              "product": "Crédito Simple (MC)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911941281",
-              "product": "Crédito Cuenta Corriente (MC)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          },
-          {
-              "productId": "026911951282",
-              "product": "Crédito Cuenta Corriente (TC)",
-              "institucion": "Nextfin, S.A. de C.V., SOFOM, E.N.R."
-          }
-      ]
-  };
+
 
   const sentido_resolucion = [
     { 
@@ -361,32 +282,60 @@ const enviarqueja = () =>{
           }
       ]
   };
-    const municipios = {};
-    const codigos_postales = {};
-    const colonia = {};
-    const [mes,setMes] = useState("");
-    const [folio,setFolio] = useState("");
-    const [seleccion,setSeleccion] = useState("");
-    const [fecharep, setFechaRep] = useState("");
-    const [option, setOption] = useState("");
-    const [niveles, setNiveles] = useState("");
-    const [producto, setProducto] = useState("");
-    const [pori, setPori] = useState("NO");
-    const [estado, setEstado] = useState(1);
-    const [persona, setPersona] = useState(1);
-    const [sexo, setSexo] = useState("");
-    const [queja,setQueja] = useState("");
-    const [penalizacion, setPenalizacion] = useState(0);
 
-    const manejarCambioMedios = (e) => {
-      setOption(e.target.value)
-    } 
-    const manejarCambio = (e) => {
-      setSeleccion(e.target.value)
-      }
+  
+
+    const [valorProductos, setValorProductos] = useState([]);
+    const [valorCausas, setValorCausas] = useState([]);
+    const [primeraRenderizacion,setPrimeraRenderizacion] = useState(true);
+    const [valorMunicipio, setValorMunicipio] = useState([]);
+    const [valorCP, setValorCP] = useState([]);
+    const [coloniaValue,setColoniaValue] = useState([]);
+    const razonSocial = null; //String
+    const Sector = null; //String
+    const [mes,setMes] = useState(""); //int
+    const [folio,setFolio] = useState(""); //String
+    const [numConsulta,setNumConsulta] = useState(1); //int
+    const [fecharep, setFechaRep] = useState(""); //Fecha
+    const [medio, setMedio] = useState(""); //int
+    const [niveles, setNiveles] = useState(""); //int
+    const [producto, setProducto] = useState(""); //string
+    const [causa,setCausa] = useState(""); //string
+    const [pori, setPori] = useState("NO"); //String SI o NO
+    const [estatus, setEstatus] = useState(1); //int
+    const [entidad, setEntidad] = useState(""); //int
+    const [municipio, setMunicipio] = useState(""); //int
+    const [cp, setCP] = useState(""); //int
+    const [colonia, setColonia] = useState(""); //int
+    const [localidad, setLocalidad] = useState(); //int
+    const [persona, setPersona] = useState(1); //int
+    const [sexo, setSexo] = useState("M"); //char
+    const [edad, setEdad] = useState(0); //int
+    const [fechaResolucion, setFechaResolucion] = useState(""); //Fecha
+    const [fechaNotificacion, setFechaNotificacion] = useState(""); //Fecha
+    const [sentidoResolucion, setSentidoResolucion] = useState(""); //int
+    const [numPenalizacion , setNumPenalizacion] = useState(0); //int 
+    const [tipoPenalizacion, setTipoPenalizacion] = useState(""); //int
+ 
+
+    const manejarCambioMes = (e) => {
+      setMes(Number(e.target.value))
+    }
 
     const manejarCambioFolio = (e) => {
       setFolio(e.target.value)
+    }
+
+    const manejarCambioNumConsulta = (e) => {
+      setNumConsulta(Number(e.target.value))
+    }
+
+    const manejarCambioMedios = (e) => {
+      setMedio(Number(e.target.value))
+    } 
+
+    const manejarCambioCausa = (e) => {
+      setCausa(e.target.value)
     }
 
     const manejarCambioFechaRep = (e) => {
@@ -394,7 +343,7 @@ const enviarqueja = () =>{
     }
 
     const manejarCambioNiveles = (e) => {
-      setNiveles(e.target.value)
+      setNiveles(Number(e.target.value))
     } 
 
     const manejarCambioProducto = (e) => {
@@ -405,9 +354,29 @@ const enviarqueja = () =>{
       setPori(e.target.value)
     } 
 
-    const manejarCambioEstado = (e) => {
-      setEstado(Number(e.target.value))
+    const manejarCambioEstatus = (e) => {
+      setEstatus(Number(e.target.value))
     } 
+
+    const manejarCambioEntidad = (e) => {
+      setEntidad(Number(e.target.value))
+    }
+
+    const manejarCambioMunicipio = (e) => {
+      setMunicipio(Number(e.target.value))
+    }
+
+    const manejarCambioCP = (e) => {
+      setCP(Number(e.target.value))
+    }
+
+    const manejarCambioColonia = (e) => {
+      setColonia(Number(e.target.value)) 
+    }
+
+    const manejarCambioLocalidad = (e) => {
+      setLocalidad(Number(e.target.value))
+    }
 
     const manejarCambioPersona = (e) => {
       setPersona(Number(e.target.value))
@@ -417,59 +386,174 @@ const enviarqueja = () =>{
       setSexo(e.target.value)
     } 
 
-    const manejarCambioQueja = (e) => {
-      setQueja(e.target.value)
+    const manejarCambioEdad = (e) => {
+      setEdad(Number(e.target.value))
     }
 
-    const manejarCambioPenalizacion = (e) => {
-      setPenalizacion(Number(e.target.value))
-    } 
+    const manejarfechaResolucion = (e) => {
+      setFechaResolucion(e.target.value)  
+    }
+
+   const manejarfechaNotificacion = (e) => {
+      setFechaNotificacion(e.target.value)
+    }
+
+    const manejarnumPenalizacion = (e) => {
+      setNumPenalizacion(Number(e.target.value)) 
+    }
+
+    const manejartipoPensalizacion = (e) => {
+      setTipoPenalizacion(Number(e.target.value))
+    }
+
+    const manejarsentidoResolucion = (e) => {
+      setSentidoResolucion(Number(e.target.value))
+    }
+
+
+    useEffect(() => { 
+      if (!token) return;
+      const fetchProductos = async () => {
+        const resp = await fetch('https://localhost:7030/ProductosRedeco',{
+          method:'Post',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+        })
+        const data = await resp.json()
+        setValorProductos(data)
+        setCausa("")
+      }
+
+      fetchProductos();
+
+    },[token,router])
+
+    useEffect(() => {
+        if(!producto) return;
+        const fetchCausas = async () => {
+          console.log("Dentro")
+          console.log("Producto",producto)
+          const resp = await fetch(`https://localhost:7030/CausasRedeco?producto=${producto}`,{
+            method:'Post',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+          })
+          const data = await resp.json()
+          setValorCausas(data)
+          setCausa("")
+        }
+
+        fetchCausas();
+    },[producto])
+        
+   
+     useEffect(() => {
+            const fetchMunicipio = async () => {
+                const resp = await fetch(`https://localhost:7030/Entidades/Municipios?entidad=${entidad}`)
+                const data = await resp.json()
+                setValorMunicipio(data)
+                setMunicipio("")
+            }
+        
+            if (!primeraRenderizacion) { // Solo ejecutar si no es la primera renderización
+                fetchMunicipio();
+              } else {
+                setPrimeraRenderizacion(false); // Marcar la primera renderización como completada
+              }
+        },[entidad])
+
+        useEffect(() => {
+          const fetchCP = async () => {
+              const resp = await fetch(`https://localhost:7030/Entidades/CP?municipio=${municipio}&estado=${entidad}`)
+              const data = await resp.json()
+              setValorCP(data)
+              console.log(data)
+              
+          }
+          if (!primeraRenderizacion) { // Solo ejecutar si no es la primera renderización
+                fetchCP();
+              } else {
+                setPrimeraRenderizacion(false) // Marcar la primera renderización como completada
+              }
+        },[municipio])
+
+        useEffect(() => {
+          if (!cp) return;  
+          const fetchColonia = async () => {
+            const resp = await fetch(`https://localhost:7030/Entidades/Colonias?codigo_postal=${cp}`)
+            const data = await resp.json()
+            console.log(data)
+            setColoniaValue(data)
+          }
+          fetchColonia();
+        },[cp])
 
     const enviar = () =>{
-      const Enviarqueja = [
+      const Enviarqueja = 
         {
-          "QuejasDenominacion": "Denominación o razón social",
-          "QuejasSector": "Sector",
-          "QuejasNoMes": seleccion,
-          "QuejasNum": "Número de quejas",
+          "QuejasDenominacion": "Info100",
+          "QuejasSector": "Cualquiera",
+          "QuejasNoMes": mes,
+          "QuejasNum": numConsulta,
           "QuejasFolio": folio,
-          "QuejasFecRecepcion": fecharep,
-          "QuejasMedio": "Medio de recepción o canal",
-          "QuejasNivelAT": "Nivel de atención o contacto",
-          "QuejasProducto": "Producto y/o Servicio",
-          "QuejasCausa": "Causa de la queja",
-          "QuejasPORI": "PORI",
-          "QuejasEstatus": "Estado",
-          "QuejasEstados": "Entidad Federativa",
-          "QuejasMunId": "Municipio o Alcaldía",
-          "QuejasLocId": "Localidad",
-          "QuejasColId": "Colonia",
-          "QuejasCP": "Código Postal",
-          "QuejasTipoPersona": "Tipo de persona",
-          "QuejasSexo": "Sexo",
-          "QuejasEdad": "Edad",
-          "QuejasFecResolucion": "Fecha de resolución",
-          "QuejasFecNotificacion": "Fecha en la que se notificó al usuario",
-          "QuejasRespuesta": "Sentido de la resolución",
-          "QuejasNumPenal": "Número de penalización",
-          "QuejasPenalizacion": "Tipo de penalización"
-        }
-      ];
-      console.log(Enviarqueja);
+          "QuejasFecRecepcion": formatearFecha(fecharep),
+          "QuejasMedio": medio,
+          "QuejasNivelAT": niveles,
+          "QuejasProducto": producto,
+          "QuejasCausa": causa,
+          "QuejasPORI": pori,
+          "QuejasEstatus": estatus,
+          "QuejasEstados": entidad,
+          "QuejasMunId": municipio,
+          "QuejasLocId": 9,
+          "QuejasColId": colonia,
+          "QuejasCP": cp,
+          "QuejasTipoPersona": persona,
+          "QuejasSexo": sexo,
+          "QuejasEdad": edad,
+          "QuejasFecResolucion": formatearFecha(fechaResolucion),
+          "QuejasFecNotificacion": formatearFecha(fechaNotificacion),
+          "QuejasRespuesta": sentidoResolucion,
+          "QuejasNumPenal": numPenalizacion,
+          "QuejasPenalizacion": tipoPenalizacion
+         } ;
+
+         console.log(Enviarqueja)
+      const enviar = async () => {
+        const resp = await fetch('https://localhost:7030/Redeco?ambiente=1',{
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(Enviarqueja)
+        })
+
+        const data = await resp.json()
+        console.log(data)
+      }
+
+      enviar();
     
+    };
+
+    const formatearFecha = (fecha) => {
+      if (!fecha) return "";
+      const [yyyy, mm, dd] = fecha.split("-"); // Divide la fecha en partes
+      return `${dd}/${mm}/${yyyy}`; // Retorna en formato "DD/MM/YYYY"
     };
 
     
 
-    //console.log("El valor de estado es:"+estado)
-  
 
 
     return(
         <div className="Cuestionario container">
         <div>
           <label>Mes a informar: </label>
-          <select onChange={manejarCambio} value={seleccion} className="form-control">
+          <select onChange={manejarCambioMes} value={mes} className="form-control">
           <option value="" disabled>Selecciona una opción</option>
           {meses.map(Mes => (
             <option key={Mes.id} value={Mes.id}>
@@ -495,7 +579,9 @@ const enviarqueja = () =>{
           <input
             type="number"
             name="numero"
-            placeholder="1"/>
+            onChange={manejarCambioNumConsulta}
+            placeholder="1"
+            className="form-control"/>
         </div>
 
         <div>
@@ -509,8 +595,8 @@ const enviarqueja = () =>{
         </div>
 
         <div>
-          <label>Medio o Cancal de recepción</label>
-          <select onChange={manejarCambioMedios} value={option} className="form-control">
+          <label>Medio o Canal de recepción</label>
+          <select onChange={manejarCambioMedios} value={medio} className="form-control">
           <option value="" disabled>Selecciona una opción</option>
           {medios_recepcion.medio.map(opcion =>
             <option key={opcion.medioId} value={opcion.medioId}>{opcion.medioDsc}</option>
@@ -532,16 +618,19 @@ const enviarqueja = () =>{
           <label>Producto y/o servicio</label>
           <select onChange={manejarCambioProducto} value={producto} className="form-control">
             <option value="" disabled>Seleccione una opción</option>
-            {productos.products.map(product => 
-              <option key={product.productId} value={product.productId}>{product.product}</option>
+            {valorProductos.map(product => 
+              <option key={product.id} value={product.idProducto}>{product.descripcion}</option>
             )}
           </select>
         </div>
 
         <div>
           <label>Causa o motivo</label>
-          <select  className="form-control">
-            <option>Seleccione una opción</option>
+          <select onChange={manejarCambioCausa} value={causa} className="form-control">
+            <option value="" disabled>Seleccione una opción</option>
+            {valorCausas.map(causa =>
+              <option key={causa.idCausa} value={causa.idCausa}>{causa.descripcion}</option>
+            )}
           </select>
         </div>
 
@@ -555,6 +644,7 @@ const enviarqueja = () =>{
                 value="SI"
                 checked={pori === 'SI'}
                 onChange={manejarCambioPORI}
+                className="form-check-input"
                 // disabled={false}
               />
               Sí
@@ -566,6 +656,7 @@ const enviarqueja = () =>{
                 value="NO"
                 checked={pori === 'NO'}
                 onChange={manejarCambioPORI}
+                className="form-check-input"
                 // disabled={false}
               />
               No
@@ -579,24 +670,65 @@ const enviarqueja = () =>{
         <label>
           <input
             type="radio"
-            name="estado"
+            name="estatus"
             value={1}
-            checked={estado === 1}
-            onChange={manejarCambioEstado}
+            checked={estatus === 1}
+            onChange={manejarCambioEstatus}
+            className="form-check-input"
           />
           Pendiente
         </label>
         <label>
           <input
             type="radio"
-            name="estado"
+            name="estatus"
             value={2}
-            checked={estado === 2}
-            onChange={manejarCambioEstado}
+            checked={estatus === 2}
+            onChange={manejarCambioEstatus}
+            className="form-check-input"
           />
           Conluido
         </label>
       </div>
+    </div>
+
+   <div>
+    <label>Entidad Federativa</label>
+    <select  onChange={manejarCambioEntidad} value={entidad} className="form-control">
+      <option value="" disabled>Seleccione una opción</option>
+      {estados.estados.map(estado =>
+        <option value={estado.claveEdo} key={estado.claveEdo}>{estado.estado}</option>
+      )}
+    </select>
+   </div>
+
+   <div> 
+    <label>Municipio o Alcaldía</label>
+    <select className="form-control" onChange={manejarCambioMunicipio} value={municipio}>
+      <option value="" disabled>Seleccione una opción</option>
+      {valorMunicipio.map(municipio =>
+        <option value={municipio.idMunicipio} key={municipio.idMunicipio}>{municipio.municipio}</option>)}
+    </select>
+   </div>
+
+   <div>
+    <label>Código Postal</label>
+    <select value={cp} onChange={manejarCambioCP} className="form-control">
+      <option value="" disabled>Seleccione una opción</option>
+      {valorCP.map(cp =>
+        <option value={cp.codigoPostal} key={cp.codigoPostal}>{cp.codigoPostal}</option>
+      )}
+      </select>
+    </div>
+
+    <div>
+      <label>Colonia</label>
+      <select value={colonia} onChange={manejarCambioColonia} className="form-control">
+        <option value="" disabled>Seleccione una opción</option>
+        {coloniaValue.map(colonia =>
+          <option value={colonia.idColonia} key={colonia.idColonia}>{colonia.colonia1}</option>
+        )}
+        </select>
     </div>
 
     <div>
@@ -637,6 +769,7 @@ const enviarqueja = () =>{
             value="H"
             checked={sexo === "H"}
             onChange={manejarCambioSexo}
+            className="form-check-input"
           />
           Hombre
         </label>
@@ -647,6 +780,7 @@ const enviarqueja = () =>{
             value="M"
             checked={sexo === "M"}
             onChange={manejarCambioSexo}
+            className="form-check-input"
           />
           Mujer
         </label>
@@ -658,6 +792,9 @@ const enviarqueja = () =>{
           <input
             type="number"
             name="edad"
+            className="form-control"
+            onChange={manejarCambioEdad}
+            value={edad}
             />
         </div>
 
@@ -667,6 +804,8 @@ const enviarqueja = () =>{
             type="date"
             name="fecha_resolución"
             className="form-control"
+            onChange={manejarfechaResolucion}
+            value={fechaResolucion}
             />
         </div>
 
@@ -676,12 +815,14 @@ const enviarqueja = () =>{
             type="date"
             name="notificacion"
             className="form-control"
+            onChange={manejarfechaNotificacion}
+            value={fechaNotificacion}
            />
         </div>
 
         <div>
           <label>Sentido de la resolución</label>
-          <select onChange={manejarCambioQueja} value={queja} className="form-control">
+          <select onChange={manejarsentidoResolucion} value={sentidoResolucion} className="form-control">
             <option disabled>Seleccione una opción</option>
             {sentido_resolucion.map(sentido =>
               <option value={sentido.valor} key={sentido.valor}>{sentido.descripcion}</option>
@@ -694,13 +835,14 @@ const enviarqueja = () =>{
           <input
             type="number"
             name="penalización"
-            value={penalizacion}
-            onChange={manejarCambioPenalizacion}
+            value={numPenalizacion}
+            onChange={manejarnumPenalizacion}
+            className="form-control"
            />
         </div>
         <div>
           <label>Tipo de penalización</label>
-          <select onChange={manejarCambioPenalizacion} value={penalizacion} className="form-control">
+          <select onChange={manejartipoPensalizacion} value={tipoPenalizacion} className="form-control">
             <option disabled>Seleccione opción</option>
             {opciones_penalizacion.map(pena => 
               <option value={pena.id} key={pena.id}>{pena.categoria} - {pena.descripcion}</option>
