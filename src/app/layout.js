@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { AuthProvider } from './context/AuthContext';
 import Nav from './nav';
 
 
@@ -24,10 +23,9 @@ export default function RootLayout({ children }) {
     <html lang="en" >
      
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <AuthProvider>
+      
         <Nav/>
         {children}
-        </AuthProvider>
       </body>
     </html>
   );

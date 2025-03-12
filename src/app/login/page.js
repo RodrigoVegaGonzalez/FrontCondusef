@@ -2,11 +2,11 @@
 
 import {React,useState, useContext} from "react";
 import { useRouter } from 'next/navigation';
-import AuthContext   from '../context/AuthContext';
+
 
 const Login = () => {
-    const API_URL = process.env.NEXT_PUBLIC_AMBIENTE;
-    const { login } = useContext(AuthContext);
+    const API_URL = process.env.NEXT_PUBLIC_URL;
+    
     //const token = localStorage.getItem('token');
     const router = useRouter();
     const [usuario, setUsuario] = useState("");
@@ -42,10 +42,12 @@ const Login = () => {
                 console.log('Datos enviados correctamente');
                 console.log(data)
                 let id = data.token
-                login(data.token);
-                localStorage.setItem('token', data.token); 
-                document.cookie = `token=${data.token}; path=/`;
-                router.push(`/home`);
+                await fetch("/api/login", {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: { "Content-Type": "application/json" },
+                  });
+                  window.location.href = "/home";
                 // Puedes redirigir al usuario o mostrar un mensaje de éxito
               } else {
                 // La petición falló

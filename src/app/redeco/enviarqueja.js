@@ -2,14 +2,22 @@
 import React,{useState,useEffect,useContext} from "react";
 import { useRouter } from 'next/navigation';
 import '../css/styles.css'
-import AuthContext from '../context/AuthContext';
 
 const enviarqueja = () =>{
   
-  const API_URL = process.env.NEXT_PUBLIC_AMBIENTE;
+  const API_URL = process.env.NEXT_PUBLIC_URL;
+  const AMBIENTE = process.env.NEXT_PUBLIC_AMBIENTE;
   const router = useRouter();
-  //const [token, setToken] = useState(null);
-  const { token } = useContext(AuthContext);
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+          async function fetchToken() {
+            const res = await fetch("/api/token");
+            const data = await res.json();
+            setToken(data.token || null);
+          }
+          fetchToken();
+        }, []);
   
   // useEffect(() => {
   //   // Acceder a localStorage solo dentro de useEffect
@@ -414,7 +422,7 @@ const enviarqueja = () =>{
     useEffect(() => { 
       if (!token) return;
       const fetchProductos = async () => {
-        const resp = await fetch('https://localhost:7030/ProductosRedeco',{
+        const resp = await fetch(`${API_URL}/ProductosRedeco`,{
           method:'Post',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -432,9 +440,8 @@ const enviarqueja = () =>{
     useEffect(() => {
         if(!producto) return;
         const fetchCausas = async () => {
-          console.log("Dentro")
-          console.log("Producto",producto)
-          const resp = await fetch(`https://localhost:7030/CausasRedeco?producto=${producto}`,{
+          
+          const resp = await fetch(`${API_URL}/CausasRedeco?producto=${producto}`,{
             method:'Post',
             headers: {
               'Authorization': `Bearer ${token}`
@@ -482,7 +489,7 @@ const enviarqueja = () =>{
         useEffect(() => {
           if (!cp) return;  
           const fetchColonia = async () => {
-            const resp = await fetch(`https://localhost:7030/Entidades/Colonias?codigo_postal=${cp}`)
+            const resp = await fetch(`${API_URL}/Entidades/Colonias?codigo_postal=${cp}`)
             const data = await resp.json()
             console.log(data)
             setColoniaValue(data)
@@ -522,7 +529,7 @@ const enviarqueja = () =>{
 
          console.log(Enviarqueja)
       const enviar = async () => {
-        const resp = await fetch('https://localhost:7030/Redeco?ambiente=1',{
+        const resp = await fetch(`https://localhost:7030/Redeco?ambiente=${AMBIENTE}`,{
           method:'POST',
           headers: {
             'Content-Type': 'application/json',

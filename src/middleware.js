@@ -11,7 +11,7 @@ export function middleware(request) {
     // Si el token NO existe y la ruta no es pública, redirigir al login
     if (!token && !publicRoutes.includes(request.nextUrl.pathname)) {
         console.log("🔒 Redirigiendo a /home porque no hay token");
-        return NextResponse.redirect(new URL('/home', request.url));
+        return NextResponse.redirect(new URL('/login', request.url));
     }
 
     // Si hay token o la ruta es pública, continuar normalmente
