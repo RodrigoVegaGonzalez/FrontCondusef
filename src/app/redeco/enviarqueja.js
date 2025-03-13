@@ -514,7 +514,7 @@ const enviarqueja = () =>{
           "QuejasEstatus": estatus,
           "QuejasEstados": entidad,
           "QuejasMunId": municipio,
-          "QuejasLocId": 9,
+          "QuejasLocId": 9, //Falta ponerla localidad
           "QuejasColId": colonia,
           "QuejasCP": cp,
           "QuejasTipoPersona": persona,
@@ -830,7 +830,7 @@ const enviarqueja = () =>{
         <div>
           <label>Sentido de la resolución</label>
           <select onChange={manejarsentidoResolucion} value={sentidoResolucion} className="form-control">
-            <option disabled>Seleccione una opción</option>
+            <option value="" disabled>Seleccione una opción</option>
             {sentido_resolucion.map(sentido =>
               <option value={sentido.valor} key={sentido.valor}>{sentido.descripcion}</option>
             )}
@@ -850,7 +850,7 @@ const enviarqueja = () =>{
         <div>
           <label>Tipo de penalización</label>
           <select onChange={manejartipoPensalizacion} value={tipoPenalizacion} className="form-control">
-            <option disabled>Seleccione opción</option>
+            <option value="" disabled>Seleccione opción</option>
             {opciones_penalizacion.map(pena => 
               <option value={pena.id} key={pena.id}>{pena.categoria} - {pena.descripcion}</option>
             )}
