@@ -1,32 +1,28 @@
 'use client';
 import Link from 'next/link'
 import React,{useEffect,useState, useContext } from "react";
-import AuthContext   from './context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { set } from 'date-fns';
-const nav = () => {
-    const { token, logout } = useContext(AuthContext);
-    // useEffect(() => {
-    //     // Acceder a localStorage solo dentro de useEffect
-    //     const token = localStorage.getItem('token');
-    //     setToken(token);
-    
-    //     if (!token) {
-    //       router.push('/');
-    //     }
 
-    // }, []);
+const nav = () => {
+    const [token, setToken] = useState(null);
+    useEffect(() => {
+        async function fetchToken() {
+          const res = await fetch("/api/token");
+          const data = await res.json();
+          setToken(data.token || null);
+        }
+        fetchToken();
+      }, []);
+   
     const router = useRouter();
     // const [token, setToken] = useState(null);
-    const cerrar_sesion = () => {
-        localStorage.removeItem('token');
-        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-        setToken(null);
-    }
+    
 
-    const handleLogout = () => {
-        logout();
-        router.push('/');  // O a donde quieras llevar al usuario después de cerrar sesión
+    const handleLogout = async () => {
+        await fetch("/api/logout", {
+            method: "POST",
+          });
+          window.location.href = "/"; // O a donde quieras llevar al usuario después de cerrar sesión
     };
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
