@@ -58,3 +58,13 @@ label{
     /* height: 100%; */
 }
 
+
+.custom-toast {
+    max-width: 350px !important;
+    font-size: 14px !important;
+  }
+  
+  .custom-toast img {
+    width: 24px !important;
+    height: 24px !important;
+  }

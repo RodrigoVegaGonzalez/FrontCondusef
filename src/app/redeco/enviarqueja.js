@@ -1,7 +1,9 @@
 "use client";
 import React,{useState,useEffect} from "react";
 import { useRouter } from 'next/navigation';
+import { ToastContainer, toast } from 'react-toastify';
 import '../css/styles.css'
+
 
 const enviarqueja = () =>{
   
@@ -9,7 +11,32 @@ const enviarqueja = () =>{
   const AMBIENTE = process.env.NEXT_PUBLIC_AMBIENTE;
   const router = useRouter();
   const [token, setToken] = useState(null);
+  const notify = (error) => {
+    toast(`❌  ${error} `, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "dark",
+      className: "custom-toast", // Agregar clase personalizada
+    });
+  }
 
+  const succed = (mensaje) => {
+    toast(`✅  ${mensaje} `, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+      className: "custom-toast", // Agregar clase personalizada
+    });
+  }
+ 
   useEffect(() => {
           async function fetchToken() {
             const res = await fetch("/api/token");
@@ -287,7 +314,7 @@ const enviarqueja = () =>{
       localidad: "",
       persona: 1,
       sexo: "M",
-      edad: 0,
+      edad: "",
       fechaResolucion: "",
       fechaNotificacion: "",
       sentidoResolucion: "",
@@ -342,8 +369,38 @@ const enviarqueja = () =>{
       if (name === "causa") {
         const selectedCausa = valorCausas.find(cau => cau.idCausa.toString() === value);
         newValue = selectedCausa ? selectedCausa.idCausa : "";
-        console.log(selectedCausa)
       }
+
+      // if (name === "persona") {
+      //   const personasValue = Number(value);
+      //   console.log("Entra a personas")
+      //   if (personasValue === 2) {
+      //     setFormData({
+      //       ...formData,
+      //       [name]: personasValue,
+      //       sexo: null,
+      //       edad: null,
+      //     });
+      //     return; // Evita que llegue al setFormData general
+      //   }
+      // }
+
+      if (name === "colonia") {
+        console.log("Valor de la colonia: "+value)
+        const selectLocalidad = coloniaValue.find(col => col.idColonia.toString() === value);
+        
+    
+        // 🔹 Si encuentra el CP, también actualiza la localidad
+        setFormData({
+          ...formData,
+          [name]: newValue, // Código postal
+          localidad: selectLocalidad ? selectLocalidad.idTipoLocalidad : "" // Localidad (si existe)
+        });
+    
+        return; // 🔥 Evita que el código siga ejecutando el último `setFormData`
+      }
+    
+
       setFormData({
         ...formData,
         [name]: newValue,
@@ -371,7 +428,7 @@ const enviarqueja = () =>{
 
     },[token,router])
 
-    useEffect(() => {
+    useEffect(() => { //Productos
       console.log(formData.producto)
         if(!formData.producto) return;
         const fetchCausas = async () => {
@@ -392,7 +449,7 @@ const enviarqueja = () =>{
     },[formData.producto])
         
    
-     useEffect(() => {
+     useEffect(() => { //Municipios
             const fetchMunicipio = async () => {
                 const resp = await fetch(`${API_URL}/Entidades/Municipios?entidad=${formData.entidad}`)
                 const data = await resp.json()
@@ -408,12 +465,11 @@ const enviarqueja = () =>{
               }
         },[formData.entidad])
 
-        useEffect(() => {
+        useEffect(() => { //Codigos postales
           const fetchCP = async () => {
               const resp = await fetch(`${API_URL}/Entidades/CP?municipio=${formData.municipio}&estado=${formData.entidad}`)
               const data = await resp.json()
               setValorCP(data)
-              console.log(data)
               
           }
           if (!primeraRenderizacion) { // Solo ejecutar si no es la primera renderización
@@ -423,7 +479,7 @@ const enviarqueja = () =>{
               }
         },[formData.municipio])
 
-        useEffect(() => {
+        useEffect(() => { //Colonias
           if (!formData.cp) return;  
           const fetchColonia = async () => {
             const resp = await fetch(`${API_URL}/Entidades/Colonias?codigo_postal=${formData.cp}`)
@@ -435,7 +491,22 @@ const enviarqueja = () =>{
         },[formData.cp])
 
     const enviar = () =>{
-      
+      let sexo = formData.sexo;
+      let edad = formData.edad;
+      let fecharec = formatearFecha(formData.fecharep);
+      let sentidorec = formData.sentidoResolucion;
+      let fechaNotificacion = formatearFecha(formData.fechaNotificacion);
+      if(formData.persona === 2){
+         sexo = null;
+         edad = null;
+      }
+
+      if(formData.estatus === 1){
+        fecharec = null;
+        sentidorec = null
+        fechaNotificacion = null;
+      }
+
       const Enviarqueja = 
         {
           "QuejasDenominacion": "Info100",
@@ -452,15 +523,15 @@ const enviarqueja = () =>{
           "QuejasEstatus": formData.estatus,
           "QuejasEstados": formData.entidad,
           "QuejasMunId": formData.municipio,
-          "QuejasLocId": 9, //Falta ponerla localidad
+          "QuejasLocId": formData.localidad, //Falta ponerla localidad
           "QuejasColId": formData.colonia,
           "QuejasCP": formData.cp,
           "QuejasTipoPersona": formData.persona,
-          "QuejasSexo": formData.sexo,
-          "QuejasEdad": formData.edad,
-          "QuejasFecResolucion": formatearFecha(formData.fechaResolucion),
-          "QuejasFecNotificacion": formatearFecha(formData.fechaNotificacion),
-          "QuejasRespuesta": formData.sentidoResolucion,
+          "QuejasSexo": sexo,
+          "QuejasEdad": edad,
+          "QuejasFecResolucion": fecharec,
+          "QuejasFecNotificacion": fechaNotificacion,
+          "QuejasRespuesta": sentidorec,
           "QuejasNumPenal": formData.numPenalizacion,
           "QuejasPenalizacion": formData.tipoPenalizacion
          } ;
@@ -478,16 +549,38 @@ const enviarqueja = () =>{
           body: JSON.stringify(Enviarqueja)
         })
 
-        // const data = await resp.json()
+        if(resp.ok){
+          succed(`Folio ${formData.folio} enviado correctamente`)
+        }else{
+          console.log("Dentro de la respuesta")
+         const data = await resp.json()
+          if(data.errors){
+            for(const key in data.errors){
+              for(const key2 in data.errors[key]){
+                notify(data.errors[key][key2])
+            }
+               
+        }
         // console.log(data)
       }
-    if(errores < 1) return;
-     enviar();
+    }
+  }
+      const tamaño = Object.keys(errores).length;
+    if(tamaño > 1){
+      console.log(errores)
+      Object.values(errores).forEach((descripcion) => {
+       notify(descripcion)
+      });
+    }else{
+      enviar();
+      //succed(`Folio ${formData.folio} enviado correctamente`)
+       
+    }
+   
     
     };
 
     const validarQueja = (data) => {
-      console.log(data)
       let errores = {};
       if (!data.mes) errores.mes = "El mes es obligatorio.";
       if (!data.folio.trim()) errores.folio = "El folio es obligatorio.";
@@ -503,11 +596,17 @@ const enviarqueja = () =>{
       if (!data.colonia) errores.colonia = "La colonia es obligatoria.";
       if (!data.localidad) errores.localidad = "La localidad es obligatoria.";
       if (!data.persona) errores.persona = "El tipo de persona es obligatorio.";
-      if (!data.sexo.trim()) errores.sexo = "El sexo es obligatorio.";
-      if (!data.edad || isNaN(data.edad) || data.edad < 18) errores.edad = "La edad debe de ser arriba de 18 años.";
-      if (!data.fechaResolucion) errores.fechaResolucion = "La fecha de resolución es obligatoria.";
-      if (!data.fechaNotificacion) errores.fechaNotificacion = "La fecha de notificación es obligatoria.";
+      if(!(data.persona === 2)){
+        if (!data.sexo.trim()) errores.sexo = "El sexo es obligatorio.";
+        if (!data.edad || isNaN(data.edad) || data.edad < 18) errores.edad = "La edad debe de ser arriba de 18 años.";
+        if (!data.fechaNotificacion) errores.fechaNotificacion = "La fecha de notificación es obligatoria.";
+        if (!data.fechaResolucion) errores.fechaResolucion = "La fecha de resolución es obligatoria.";
+      }
+      
+      if(!(data.estatus === 1)){
+     
       if (!data.sentidoResolucion) errores.sentidoResolucion = "El sentido de la resolución es obligatorio.";
+      }
       if (!data.numPenalizacion && data.numPenalizacion !== 0) errores.numPenalizacion = "El número de penalización es obligatorio.";
       if (!data.tipoPenalizacion && data.tipoPenalizacion !== 0) errores.tipoPenalizacion = "El tipo de penalización es obligatorio.";
     
@@ -760,6 +859,7 @@ const enviarqueja = () =>{
             name="sexo"
             value="H"
             checked={formData.sexo === "H"}
+            disabled={formData.persona === 2}
             onChange={handleChange}
             className={`form-check-input ${errors.sexo ? "is-invalid" : ""}`}
           />
@@ -770,6 +870,7 @@ const enviarqueja = () =>{
             type="radio"
             name="sexo"
             value="M"
+            disabled={formData.persona === 2}
             checked={formData.sexo === "M"}
             onChange={handleChange}
             className={`form-check-input ${errors.sexo ? "is-invalid" : ""}`}
@@ -785,6 +886,8 @@ const enviarqueja = () =>{
           <input
             type="number"
             name="edad"
+            disabled={formData.persona === 2}
+            placeholder="0"
             className={`form-control ${errors.edad ? "is-invalid" : ""}`}
             onChange={handleChange}
             value={formData.edad}
@@ -799,6 +902,7 @@ const enviarqueja = () =>{
             name="fechaResolucion"
             onChange={handleChange}
             value={formData.fechaResolucion}
+            disabled={formData.estatus === 1}
             className={`form-control ${errors.fechaResolucion ? "is-invalid" : ""}`}
             />
             {errors.fechaResolucion && <div className="invalid-feedback">{errors.fechaResolucion}</div>}
@@ -811,6 +915,7 @@ const enviarqueja = () =>{
             name="fechaNotificacion"
             onChange={handleChange}
             value={formData.fechaNotificacion}
+            disabled={formData.estatus === 1}
             className={`form-control ${errors.fechaNotificacion ? "is-invalid" : ""}`}
            />
            {errors.fechaNotificacion && <div className="invalid-feedback">{errors.fechaNotificacion}</div>}
@@ -818,7 +923,11 @@ const enviarqueja = () =>{
 
         <div>
           <label>Sentido de la resolución</label>
-          <select onChange={handleChange} value={formData.sentidoResolucion} name="sentidoResolucion" className={`form-control ${errors.sentidoResolucion ? "is-invalid" : ""}`}>
+          <select onChange={handleChange} 
+            value={formData.sentidoResolucion} 
+            name="sentidoResolucion"
+            disabled={formData.estatus === 1}
+             className={`form-control ${errors.sentidoResolucion ? "is-invalid" : ""}`}>
             <option value="" disabled>Seleccione una opción</option>
             {sentido_resolucion.map(sentido =>
               <option value={sentido.valor} key={sentido.valor}>{sentido.descripcion}</option>
@@ -833,6 +942,7 @@ const enviarqueja = () =>{
             type="number"
             name="numPenalizacion"
             value={formData.numPenalizacion}
+            placeholder="0"
             onChange={handleChange}
             className={`form-control ${errors.numPenalizacion ? "is-invalid" : ""}`}
            />
@@ -851,6 +961,10 @@ const enviarqueja = () =>{
 
         <div>
           <button onClick={enviar} className="btn btn-primary">Enviar queja</button>
+         
+          <ToastContainer />
+          
+
         </div>
         </div>
         
