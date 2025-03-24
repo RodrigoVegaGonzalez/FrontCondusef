@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 const nav = () => {
     const [token, setToken] = useState(null);
+    const [open, setOpen] = useState(false);
     useEffect(() => {
         async function fetchToken() {
           const res = await fetch("/api/token");
@@ -36,6 +37,9 @@ const nav = () => {
                         <>
                             <li className="nav-item">
                         <Link className="nav-link" href="redeco">Redeco</Link>
+                    </li>
+                    <li>
+                        
                     </li>
                     <li className="nav-item dropdown">
                         <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
