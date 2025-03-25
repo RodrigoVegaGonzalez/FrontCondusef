@@ -2,7 +2,7 @@
 import React,{useState,useEffect} from "react";
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
-import '../css/styles.css'
+import '../../css/styles.css'
 
 
 const enviarqueja = () =>{
