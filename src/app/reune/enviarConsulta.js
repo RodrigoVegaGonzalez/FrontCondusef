@@ -2,11 +2,11 @@
 import '../css/styles.css'
 import React,{useState,useEffect,useContext} from "react";
 import { useRouter } from 'next/navigation';
-import AuthContext from '../context/AuthContext';
+
 
 const EnviarConsulta = () =>{
     const router = useRouter();
-    const { token } = useContext(AuthContext);
+    const token = "";
     //console.log("Ambiente",process.env.NEXT_PUBLIC_AMBIENTE)
 
     // useEffect(() => {
