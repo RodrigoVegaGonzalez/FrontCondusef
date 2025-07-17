@@ -2,18 +2,12 @@
 import '../css/styles.css'
 import React,{useState,useEffect,useContext} from "react";
 import { useRouter } from 'next/navigation';
-import AuthContext from '../context/AuthContext';
+
 
 const EnviarConsulta = () =>{
     const router = useRouter();
-    const { token } = useContext(AuthContext);
-    //console.log("Ambiente",process.env.NEXT_PUBLIC_AMBIENTE)
 
-    // useEffect(() => {
-    //     if (!token) {
-    //       router.push('/');
-    //     }
-    //   }, []);
+    
 
     const Trimestre = [{
         name:"Enero-Marzo",
@@ -483,7 +477,7 @@ const EnviarConsulta = () =>{
     
     return(
         <div className="Cuestionario">
-            <h1>{token}</h1>
+           
             {/* <h1>Empresa: {NombreEmpresa}</h1> */}
         <div>
             <label>Trimestre</label>

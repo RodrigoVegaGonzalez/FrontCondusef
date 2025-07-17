@@ -52,8 +52,9 @@ const nav = () => {
                         <Link className="nav-link" href="/reune">Reune</Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" href="/reclamaciones">Reclamaciones</Link>
+                        <Link className="nav-link" href="/reune/Reclamaciones">Reclamaciones</Link>
                     </li>
+                    
                     <li className="nav-item">
                         <button onClick={handleLogout} className="btn btn-danger">cerrar_sesion</button>
                     </li>

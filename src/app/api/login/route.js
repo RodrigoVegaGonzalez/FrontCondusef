@@ -12,7 +12,7 @@ export async function POST(req) {
     secure: true, // Solo funciona en HTTPS
     sameSite: "strict",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 1 semana
+    maxAge: 60 * 30, // 1 semana
   });
 
   return response;
