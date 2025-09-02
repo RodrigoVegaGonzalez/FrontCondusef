@@ -1,8 +1,8 @@
-import Queja from "./enviarqueja"
+
 const redeco = () => {
     return(
         <div>
-            <Queja></Queja>
+            Redeco
         </div>
     );
 }

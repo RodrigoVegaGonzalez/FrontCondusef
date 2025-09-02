@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 
 const EnviarConsulta = () =>{
     const router = useRouter();
+    const token = "";
+    //console.log("Ambiente",process.env.NEXT_PUBLIC_AMBIENTE)
 
     
 

@@ -1,8 +1,9 @@
 "use client";
-import React,{useState,useEffect,useContext} from "react";
-import { useForm } from "react-hook-form";
+import React,{useState,useEffect} from "react";
 import { useRouter } from 'next/navigation';
-import '../css/styles.css'
+import { ToastContainer, toast } from 'react-toastify';
+import '../../css/styles.css'
+
 
 const enviarqueja = () =>{
   
@@ -10,7 +11,32 @@ const enviarqueja = () =>{
   const AMBIENTE = process.env.NEXT_PUBLIC_AMBIENTE;
   const router = useRouter();
   const [token, setToken] = useState(null);
+  const notify = (error) => {
+    toast(`❌  ${error} `, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "dark",
+      className: "custom-toast", // Agregar clase personalizada
+    });
+  }
 
+  const succed = (mensaje) => {
+    toast(`✅  ${mensaje} `, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+      className: "custom-toast", // Agregar clase personalizada
+    });
+  }
+ 
   useEffect(() => {
           async function fetchToken() {
             const res = await fetch("/api/token");
@@ -102,9 +128,7 @@ const enviarqueja = () =>{
           }
       ]
   };
-
-
-
+  
   const sentido_resolucion = [
     { 
       valor: 1, 
@@ -288,7 +312,7 @@ const enviarqueja = () =>{
       localidad: "",
       persona: 1,
       sexo: "M",
-      edad: 0,
+      edad: "",
       fechaResolucion: "",
       fechaNotificacion: "",
       sentidoResolucion: "",
@@ -343,8 +367,38 @@ const enviarqueja = () =>{
       if (name === "causa") {
         const selectedCausa = valorCausas.find(cau => cau.idCausa.toString() === value);
         newValue = selectedCausa ? selectedCausa.idCausa : "";
-        console.log(selectedCausa)
       }
+
+      // if (name === "persona") {
+      //   const personasValue = Number(value);
+      //   console.log("Entra a personas")
+      //   if (personasValue === 2) {
+      //     setFormData({
+      //       ...formData,
+      //       [name]: personasValue,
+      //       sexo: null,
+      //       edad: null,
+      //     });
+      //     return; // Evita que llegue al setFormData general
+      //   }
+      // }
+
+      if (name === "colonia") {
+        console.log("Valor de la colonia: "+value)
+        const selectLocalidad = coloniaValue.find(col => col.idColonia.toString() === value);
+        
+    
+        // 🔹 Si encuentra el CP, también actualiza la localidad
+        setFormData({
+          ...formData,
+          [name]: newValue, // Código postal
+          localidad: selectLocalidad ? selectLocalidad.idTipoLocalidad : "" // Localidad (si existe)
+        });
+    
+        return; // 🔥 Evita que el código siga ejecutando el último `setFormData`
+      }
+    
+
       setFormData({
         ...formData,
         [name]: newValue,
@@ -372,7 +426,7 @@ const enviarqueja = () =>{
 
     },[token,router])
 
-    useEffect(() => {
+    useEffect(() => { //Productos
       console.log(formData.producto)
         if(!formData.producto) return;
         const fetchCausas = async () => {
@@ -393,9 +447,9 @@ const enviarqueja = () =>{
     },[formData.producto])
         
    
-     useEffect(() => {
+     useEffect(() => { //Municipios
             const fetchMunicipio = async () => {
-                const resp = await fetch(`https://localhost:7030/Entidades/Municipios?entidad=${entidad}`)
+                const resp = await fetch(`${API_URL}/Entidades/Municipios?entidad=${formData.entidad}`)
                 const data = await resp.json()
                 setValorMunicipio(data)
                 console.log(data)
@@ -409,12 +463,11 @@ const enviarqueja = () =>{
               }
         },[formData.entidad])
 
-        useEffect(() => {
+        useEffect(() => { //Codigos postales
           const fetchCP = async () => {
-              const resp = await fetch(`https://localhost:7030/Entidades/CP?municipio=${municipio}&estado=${entidad}`)
+              const resp = await fetch(`${API_URL}/Entidades/CP?municipio=${formData.municipio}&estado=${formData.entidad}`)
               const data = await resp.json()
               setValorCP(data)
-              console.log(data)
               
           }
           if (!primeraRenderizacion) { // Solo ejecutar si no es la primera renderización
@@ -422,21 +475,36 @@ const enviarqueja = () =>{
               } else {
                 setPrimeraRenderizacion(false) // Marcar la primera renderización como completada
               }
-        },[municipio])
+        },[formData.municipio])
 
-        useEffect(() => {
-          if (!cp) return;  
+        useEffect(() => { //Colonias
+          if (!formData.cp) return;  
           const fetchColonia = async () => {
-            const resp = await fetch(`${API_URL}/Entidades/Colonias?codigo_postal=${cp}`)
+            const resp = await fetch(`${API_URL}/Entidades/Colonias?codigo_postal=${formData.cp}`)
             const data = await resp.json()
-            console.log(data)
+            
             setColoniaValue(data)
           }
           fetchColonia();
-        },[cp])
+        },[formData.cp])
 
     const enviar = () =>{
-      
+      let sexo = formData.sexo;
+      let edad = formData.edad;
+      let fecharec = formatearFecha(formData.fecharep);
+      let sentidorec = formData.sentidoResolucion;
+      let fechaNotificacion = formatearFecha(formData.fechaNotificacion);
+      if(formData.persona === 2){
+         sexo = null;
+         edad = null;
+      }
+
+      if(formData.estatus === 1){
+        fecharec = null;
+        sentidorec = null
+        fechaNotificacion = null;
+      }
+
       const Enviarqueja = 
         {
           "QuejasDenominacion": "Info100",
@@ -444,33 +512,33 @@ const enviarqueja = () =>{
           "QuejasNoMes": formData.mes,
           "QuejasNum": formData.numConsulta,
           "QuejasFolio": formData.folio,
-          "QuejasFecRecepcion": formatearFecha(fecharep),
-          "QuejasMedio": medio,
-          "QuejasNivelAT": niveles,
+          "QuejasFecRecepcion": formatearFecha(formData.fecharep),
+          "QuejasMedio": formData.medio,
+          "QuejasNivelAT": formData.niveles,
           "QuejasProducto": formData.producto,
           "QuejasCausa": formData.causa,
-          "QuejasPORI": pori,
-          "QuejasEstatus": estatus,
-          "QuejasEstados": entidad,
-          "QuejasMunId": municipio,
-          "QuejasLocId": 9, //Falta ponerla localidad
-          "QuejasColId": colonia,
-          "QuejasCP": cp,
+          "QuejasPORI": formData.pori,
+          "QuejasEstatus": formData.estatus,
+          "QuejasEstados": formData.entidad,
+          "QuejasMunId": formData.municipio,
+          "QuejasLocId": formData.localidad, //Falta ponerla localidad
+          "QuejasColId": formData.colonia,
+          "QuejasCP": formData.cp,
           "QuejasTipoPersona": formData.persona,
-          "QuejasSexo": formData.sexo,
+          "QuejasSexo": sexo,
           "QuejasEdad": edad,
-          "QuejasFecResolucion": formatearFecha(fechaResolucion),
-          "QuejasFecNotificacion": formatearFecha(fechaNotificacion),
-          "QuejasRespuesta": sentidoResolucion,
-          "QuejasNumPenal": numPenalizacion,
-          "QuejasPenalizacion": tipoPenalizacion
+          "QuejasFecResolucion": fecharec,
+          "QuejasFecNotificacion": fechaNotificacion,
+          "QuejasRespuesta": sentidorec,
+          "QuejasNumPenal": formData.numPenalizacion,
+          "QuejasPenalizacion": formData.tipoPenalizacion
          } ;
          console.log(Enviarqueja)
         const errores = validarQueja(formData);
         setErrors(errores)
          console.log(Enviarqueja)
       const enviar = async () => {
-        const resp = await fetch(`${URL}/Redeco?ambiente=${AMBIENTE}`,{
+        const resp = await fetch(`${API_URL}/Redeco?ambiente=${AMBIENTE}`,{
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -479,16 +547,38 @@ const enviarqueja = () =>{
           body: JSON.stringify(Enviarqueja)
         })
 
-        // const data = await resp.json()
+        if(resp.ok){
+          succed(`Folio ${formData.folio} enviado correctamente`)
+        }else{
+          console.log("Dentro de la respuesta")
+         const data = await resp.json()
+          if(data.errors){
+            for(const key in data.errors){
+              for(const key2 in data.errors[key]){
+                notify(data.errors[key][key2])
+            }
+               
+        }
         // console.log(data)
       }
-
-     // enviar();
+    }
+  }
+      const tamaño = Object.keys(errores).length;
+    if(tamaño > 1){
+      console.log(errores)
+      Object.values(errores).forEach((descripcion) => {
+       notify(descripcion)
+      });
+    }else{
+      enviar();
+      //succed(`Folio ${formData.folio} enviado correctamente`)
+       
+    }
+   
     
     };
 
     const validarQueja = (data) => {
-      console.log(data)
       let errores = {};
       if (!data.mes) errores.mes = "El mes es obligatorio.";
       if (!data.folio.trim()) errores.folio = "El folio es obligatorio.";
@@ -504,11 +594,17 @@ const enviarqueja = () =>{
       if (!data.colonia) errores.colonia = "La colonia es obligatoria.";
       if (!data.localidad) errores.localidad = "La localidad es obligatoria.";
       if (!data.persona) errores.persona = "El tipo de persona es obligatorio.";
-      if (!data.sexo.trim()) errores.sexo = "El sexo es obligatorio.";
-      if (!data.edad || isNaN(data.edad) || data.edad < 18) errores.edad = "La edad debe de ser arriba de 18 años.";
-      if (!data.fechaResolucion) errores.fechaResolucion = "La fecha de resolución es obligatoria.";
-      if (!data.fechaNotificacion) errores.fechaNotificacion = "La fecha de notificación es obligatoria.";
+      if(!(data.persona === 2)){
+        if (!data.sexo.trim()) errores.sexo = "El sexo es obligatorio.";
+        if (!data.edad || isNaN(data.edad) || data.edad < 18) errores.edad = "La edad debe de ser arriba de 18 años.";
+        if (!data.fechaNotificacion) errores.fechaNotificacion = "La fecha de notificación es obligatoria.";
+        if (!data.fechaResolucion) errores.fechaResolucion = "La fecha de resolución es obligatoria.";
+      }
+      
+      if(!(data.estatus === 1)){
+     
       if (!data.sentidoResolucion) errores.sentidoResolucion = "El sentido de la resolución es obligatorio.";
+      }
       if (!data.numPenalizacion && data.numPenalizacion !== 0) errores.numPenalizacion = "El número de penalización es obligatorio.";
       if (!data.tipoPenalizacion && data.tipoPenalizacion !== 0) errores.tipoPenalizacion = "El tipo de penalización es obligatorio.";
     
@@ -559,7 +655,7 @@ const enviarqueja = () =>{
             type="number"
             name="numConsulta"
             onChange={handleChange}
-            placeholder="1"
+            placeholder="0"
             value={formData.numConsulta}
             className={`form-control ${errors.numConsulta ? "is-invalid" : ""}`}/>
             {errors.numConsulta && <div className="invalid-feedback">{errors.numConsulta}</div>}
@@ -703,7 +799,7 @@ const enviarqueja = () =>{
 
    <div>
     <label>Código Postal</label>
-    <select value={formData.cp} onChange={handleChange} className={`form-control ${errors.cp ? "is-invalid" : ""}`}>
+    <select value={formData.cp} onChange={handleChange} className={`form-control ${errors.cp ? "is-invalid" : ""}`} name="cp">
       <option value="" disabled>Seleccione una opción</option>
       {valorCP.map(cp =>
         <option value={cp.codigoPostal} key={cp.codigoPostal}>{cp.codigoPostal}</option>
@@ -714,7 +810,7 @@ const enviarqueja = () =>{
 
     <div>
       <label>Colonia</label>
-      <select value={formData.colonia} onChange={handleChange} className={`form-control ${errors.colonia ? "is-invalid" : ""}`}>
+      <select value={formData.colonia} onChange={handleChange} className={`form-control ${errors.colonia ? "is-invalid" : ""}`} name="colonia"> 
         <option value="" disabled>Seleccione una opción</option>
         {coloniaValue.map(colonia =>
           <option value={colonia.idColonia} key={colonia.idColonia}>{colonia.colonia1}</option>
@@ -761,6 +857,7 @@ const enviarqueja = () =>{
             name="sexo"
             value="H"
             checked={formData.sexo === "H"}
+            disabled={formData.persona === 2}
             onChange={handleChange}
             className={`form-check-input ${errors.sexo ? "is-invalid" : ""}`}
           />
@@ -771,6 +868,7 @@ const enviarqueja = () =>{
             type="radio"
             name="sexo"
             value="M"
+            disabled={formData.persona === 2}
             checked={formData.sexo === "M"}
             onChange={handleChange}
             className={`form-check-input ${errors.sexo ? "is-invalid" : ""}`}
@@ -786,6 +884,8 @@ const enviarqueja = () =>{
           <input
             type="number"
             name="edad"
+            disabled={formData.persona === 2}
+            placeholder="0"
             className={`form-control ${errors.edad ? "is-invalid" : ""}`}
             onChange={handleChange}
             value={formData.edad}
@@ -800,6 +900,7 @@ const enviarqueja = () =>{
             name="fechaResolucion"
             onChange={handleChange}
             value={formData.fechaResolucion}
+            disabled={formData.estatus === 1}
             className={`form-control ${errors.fechaResolucion ? "is-invalid" : ""}`}
             />
             {errors.fechaResolucion && <div className="invalid-feedback">{errors.fechaResolucion}</div>}
@@ -809,9 +910,10 @@ const enviarqueja = () =>{
           <label>Fecha de Notificación</label>
           <input
             type="date"
-            name="notificacion"
+            name="fechaNotificacion"
             onChange={handleChange}
-            value={fechaNotificacion}
+            value={formData.fechaNotificacion}
+            disabled={formData.estatus === 1}
             className={`form-control ${errors.fechaNotificacion ? "is-invalid" : ""}`}
            />
            {errors.fechaNotificacion && <div className="invalid-feedback">{errors.fechaNotificacion}</div>}
@@ -819,7 +921,11 @@ const enviarqueja = () =>{
 
         <div>
           <label>Sentido de la resolución</label>
-          <select onChange={handleChange} value={formData.sentidoResolucion} className={`form-control ${errors.sentidoResolucion ? "is-invalid" : ""}`}>
+          <select onChange={handleChange} 
+            value={formData.sentidoResolucion} 
+            name="sentidoResolucion"
+            disabled={formData.estatus === 1}
+             className={`form-control ${errors.sentidoResolucion ? "is-invalid" : ""}`}>
             <option value="" disabled>Seleccione una opción</option>
             {sentido_resolucion.map(sentido =>
               <option value={sentido.valor} key={sentido.valor}>{sentido.descripcion}</option>
@@ -834,6 +940,7 @@ const enviarqueja = () =>{
             type="number"
             name="numPenalizacion"
             value={formData.numPenalizacion}
+            placeholder="0"
             onChange={handleChange}
             className={`form-control ${errors.numPenalizacion ? "is-invalid" : ""}`}
            />
@@ -841,7 +948,7 @@ const enviarqueja = () =>{
         </div>
         <div>
           <label>Tipo de penalización</label>
-          <select onChange={handleChange} value={formData.tipoPenalizacion} className={`form-control ${errors.tipoPenalizacion ? "is-invalid" : ""}`}>
+          <select onChange={handleChange} value={formData.tipoPenalizacion} name="tipoPenalizacion" className={`form-control ${errors.tipoPenalizacion ? "is-invalid" : ""}`}>
             <option value="" disabled>Seleccione opción</option>
             {opciones_penalizacion.map(pena => 
               <option value={pena.id} key={pena.id}>{pena.categoria} - {pena.descripcion}</option>
@@ -852,6 +959,10 @@ const enviarqueja = () =>{
 
         <div>
           <button onClick={enviar} className="btn btn-primary">Enviar queja</button>
+         
+          <ToastContainer />
+          
+
         </div>
         </div>
         

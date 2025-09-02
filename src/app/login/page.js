@@ -2,6 +2,7 @@
 
 import {React,useState, useContext} from "react";
 import { useRouter } from 'next/navigation';
+import '../css/styles.css'
 
 
 const Login = () => {

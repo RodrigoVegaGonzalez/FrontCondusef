@@ -1,18 +1,20 @@
 'use client';
-import Link from 'next/link'
+import { Navbar, Nav, NavDropdown, Button } from 'react-bootstrap';
 import React,{useEffect,useState, useContext } from "react";
 import { useRouter } from 'next/navigation';
+import { useToken } from './context/TokenContext';
 
 const nav = () => {
-    const [token, setToken] = useState(null);
-    useEffect(() => {
-        async function fetchToken() {
-          const res = await fetch("/api/token");
-          const data = await res.json();
-          setToken(data.token || null);
-        }
-        fetchToken();
-      }, []);
+    const { token } = useToken();
+    const [open, setOpen] = useState(false);
+    // useEffect(() => {
+    //     async function fetchToken() {
+    //       const res = await fetch("/api/token");
+    //       const data = await res.json();
+    //       setToken(data.token || null);
+    //     }
+    //     fetchToken();
+    //   }, []);
    
     const router = useRouter();
     // const [token, setToken] = useState(null);
@@ -25,52 +27,34 @@ const nav = () => {
           window.location.href = "/"; // O a donde quieras llevar al usuario después de cerrar sesión
     };
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <a className="navbar-brand" href="/home">Info 100</a>
-            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarNav">
-                <ul className="navbar-nav">
-                   {token ? (
-                        <>
-                            <li className="nav-item">
-                        <Link className="nav-link" href="redeco">Redeco</Link>
-                    </li>
-                    <li className="nav-item dropdown">
-                        <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Reune
-                        </a>
-                        <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a className="dropdown-item" href="#">Action</a>
-                            <a className="dropdown-item" href="#">Another action</a>
-                            <div className="dropdown-divider"></div>
-                            <a className="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                    <li className="nav-item">
-                        <Link className="nav-link" href="/reune">Reune</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link className="nav-link" href="/reune/Reclamaciones">Reclamaciones</Link>
-                    </li>
-                    
-                    <li className="nav-item">
-                        <button onClick={handleLogout} className="btn btn-danger">cerrar_sesion</button>
-                    </li>
-                        </>
-                   ) : (
-                    <>
-                    <li className="nav-item">
-                        <Link className="nav-link" href="/login">Login</Link>
-                    </li>
-                    </>)
+        <Navbar bg="light" expand="lg">
+             <Navbar.Brand href="#">Info 100</Navbar.Brand>
+           {token ? (
+              <>
+                  <NavDropdown title="Redeco" id="basic-nav-dropdown" className="me-3">
+                      <NavDropdown.Item href="/redeco/Queja">Enviar queja</NavDropdown.Item>
+                      <NavDropdown.Item href="/redeco/Consulta">Ver quejas</NavDropdown.Item>
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item href="#">Otra opción</NavDropdown.Item>
+                  </NavDropdown>
 
-                   }
-                    
-                </ul>
-            </div>
-        </nav>
+                   <NavDropdown title="Reune" id="basic-nav-dropdown" className="me-3">
+                      <NavDropdown.Item href="/Reune/Aclaraciones">Enviar Aclaración</NavDropdown.Item>
+                      <NavDropdown.Item href="/redeco/Consulta">Ver quejas</NavDropdown.Item>
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item href="/Reune/Consultas">Enviar Consultas</NavDropdown.Item>
+                      <NavDropdown.Item href="/redeco/Consulta">Ver quejas</NavDropdown.Item>
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item href="/Reune/Reclamaciones">Enviar Reclamaciones</NavDropdown.Item>
+                      <NavDropdown.Item href="/redeco/Consulta">Ver Reclamaciones</NavDropdown.Item>
+                  </NavDropdown>
+
+                  <Button  className="btn btn-danger me-3" onClick={handleLogout}>Cerrar sesión</Button>
+              </>
+              ) : (
+                  <Nav.Link href="/login">Inicio de Sesion</Nav.Link>
+              )}
+        </Navbar>
     );
 }
 
