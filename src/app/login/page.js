@@ -40,8 +40,8 @@ const Login = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Datos enviados correctamente');
-                console.log(data)
+               // console.log('Datos enviados correctamente');
+                //console.log(data)
                 let id = data.token
                 await fetch("/api/login", {
                     method: "POST",

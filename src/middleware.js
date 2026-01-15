@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const publicRoutes = ['/', '/home', '/login', '/register'];
 
-export function middleware(request) {
+export  function middleware(request) {
     const token = request.cookies.get('token')?.value;
     const pathname = request.nextUrl.pathname;
 
@@ -20,5 +20,5 @@ export function middleware(request) {
 }
 
 export const config = {
-    matcher: ['/redeco/:path*', '/reune/:path*', '/reclamaciones/:path*'],
+    matcher: ['/redeco/:path*', '/Reune/:path*', '/reclamaciones/:path*'],
 };

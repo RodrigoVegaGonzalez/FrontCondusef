@@ -2,15 +2,16 @@
 import '../../css/styles.css'
 import React,{useState,useEffect,useContext} from "react";
 import { useRouter } from 'next/navigation';
-
+import { useToken } from "../../context/TokenContext";
 
 const EnviarConsulta = () =>{
     const router = useRouter();
-    const token = "";
+     const { token } = useToken();
     const API_URL = process.env.NEXT_PUBLIC_URL;
     const AMBIENTE = process.env.NEXT_PUBLIC_AMBIENTE;
-    const tipo = 1; //Tipo 3 Consultas
-    
+    const tipo = 1; //1 Consultas
+    //2 Reclamaciones
+    //3 Aclaraciones
 
     const [Consulta, setConsulta] = useState({
                             InstitucionClave: "",
@@ -274,7 +275,7 @@ const EnviarConsulta = () =>{
     const [valorColonia,setValorColonia] = useState([]);
     const [valorCP, setValorCP] = useState([]); //Aquí se guardan los valores de los productos
     const [trimestre,setTrimestre] = useState("");
-    const [consultas,setConsultas] = useState("");
+    
     const [folio, setFolio] = useState("");
     const [fechaRep,setFechaRep] = useState("");
     const [medio, setMedio] = useState("");
@@ -305,7 +306,7 @@ const EnviarConsulta = () =>{
                     
                     const data = await response.json()
                     setValorProductos(data)
-
+                    console.log("Productos:",data);
             }catch(error){
                 console.log(error);
             }
@@ -314,27 +315,32 @@ const EnviarConsulta = () =>{
         fetchProductos();
     },[]);
 
-    useEffect(() => {
-        if(!producto) return;
-        const fetchCausas = async () => {
-            console.log("Cambio de producto"+producto)
-            try{
-                const resp = await fetch(`${API_URL}/ProductosEmpresas/CausasReune?producto=${producto}`,{
-                    method:'GET'
-                })
+   useEffect(() => { //Causas
+            console.log("Producto seleccionado:", producto);
+               if(!producto) return;
+             
+                const fetchCausas = async () => {
+                 const response = await fetch(`${API_URL}/ProductosEmpresas/CausasReune?producto=${producto}&tipo=${tipo}`, {
+                       headers: {
+                           'Authorization': `Bearer ${token}`
+                       },
+                       method: 'GET'
+                       });
+       
+                       if (!response.ok) {
+                       throw new Error('Error en la solicitud');
+                       }
+       
+                       const data = await response.json();
+                   setValorCausa(data);
+                  // console.log(data);
+                }
+                fetchCausas();
+                   
+             //  https://localhost:7030/ProductosEmpresas/CausasReune?producto=028212711376&tipo=2
+           }, [producto]);
     
-                const dat = await resp.json()
-                console.log("Valor causa:",dat)
-                setValorCausa(dat)
-                setCausa("");
-            }catch(e){
-                console.log("Error"+e)
-            }
-        }
 
-         fetchCausas();
-    
-  },[producto]);
 
     useEffect(() => {
         const fetchMunicipio = async () => {
@@ -554,32 +560,33 @@ const EnviarConsulta = () =>{
 
         <div>
             <label>Producto y/o Servicio</label>
-            <select value={producto} onChange={ChangeProducto} className="form-control">
+            <select value={producto} onChange={handleChange} className="form-control">
                 <option value="" disabled>Seleccione una opción</option>
                 {valorProducto.map(Pro => 
-                    <option key={Pro.id} value={Pro.idProducto}>{Pro.descripcion}</option>
+                    <option key={Pro.id} value={Pro.codigoProducto}>{Pro.producto}</option>
                 )}
             </select>
         </div>
 
-        <div>
-            <label>Fecha atención</label>
-            <input
-            type="date"
-            name="FechaAte"
-            value={fechaAt}
-            onChange={ChangeFechaAt}
-            className="form-control"/>
-        </div>
-
+      
         <div>
             <label>Causa o motivo</label>
-            <select value={causa} onChange={ChangeCausa} className="form-control">
+            <select value={Consulta.CausaId} onChange={handleChange} className="form-control">
                 <option value="" disabled>Seleccione una opción</option>
                 {valorCausa.map(val => 
                     <option key={val.id} value={val.idProducto}>{val.descripcion}</option>
                 )}
             </select>
+        </div>
+
+          <div>
+            <label>Fecha atención</label>
+            <input
+            type="date"
+            name="FechaAte"
+            value={Consulta.ConsultasFecAten}
+            onChange={handleChange}
+            className="form-control"/>
         </div>
 
         <div>
@@ -591,7 +598,7 @@ const EnviarConsulta = () =>{
                 name="option"
                 value="SI"
                 checked={pori === 'SI'}
-                onChange={ChangePori}
+                onChange={handleChange}
                 // disabled={false}
               />
               Sí
@@ -602,7 +609,7 @@ const EnviarConsulta = () =>{
                 name="option"
                 value="NO"
                 checked={pori === 'NO'}
-                onChange={ChangePori}
+                onChange={handleChange}
                 // disabled={false}
               />
               No
@@ -617,18 +624,18 @@ const EnviarConsulta = () =>{
           <input
             type="radio"
             name="EstadoQueja"
-            value={1}
+            value={Consulta.ConsultasEstatusCon}
             checked={estadoQueja === 1}
-            onChange={ChangeEstadoQueja}
+            onChange={handleChange}
           /> Pendiente
         </label>
         <label>
           <input
             type="radio"
             name="EstadoQueja"
-            value={2}
+            value={Consulta.ConsultasEstatusCon}
             checked={estadoQueja === 2}
-            onChange={ChangeEstadoQueja}
+            onChange={handleChange}
           /> Conluido
         </label>
       </div>

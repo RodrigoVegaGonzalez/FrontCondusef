@@ -2,6 +2,7 @@
 import '../../css/styles.css';
 import { useToken } from "../../context/TokenContext";
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from 'react-toastify';
 
 const aclaraciones = () => {
     
@@ -13,9 +14,9 @@ const aclaraciones = () => {
                             AclaracionDenominacion: "",
                             AclaracionSector: "",
                             AclaracionTrimestre: "",
-                            AclaracionNumero: "",
+                            AclaracionNumero: "1",
                             AclaracionFolioAtencion: "",
-                            AclaracionEstadoConPend: "",
+                            AclaracionEstadoConPend: "1",
                             AclaracionFechaAclaracion: "",
                             AclaracionFechaAtencion: "",
                             AclaracionMedioRecepcionCanal: "",
@@ -29,16 +30,42 @@ const aclaraciones = () => {
                             AclaracionLocalidad: "",
                             AclaracionColonia: "",
                             AclaracionMonetario: "NO",
-                            AclaracionMontoReclamado: "0.00",
+                            AclaracionMontoReclamado: "",
                             AclaracionPori: "NO",
-                            AclaracionTipoPersona: "1",
+                            AclaracionTipoPersona: "2",
                             AclaracionSexo: "",
                             AclaracionEdad: "",
                             AclaracionNivelAtencion: 0,
                             AclaracionFolioCondusef: "",
-                            AclaracionReversa: "0",
-                            AclaracionOperacionExtranjero: "NO "
+                            AclaracionReversa: "",
+                            AclaracionOperacionExtranjero: "NO"
                             });
+
+    const succed = (mensaje) => {
+        toast(`✅  ${mensaje} `, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "dark",
+          className: "custom-toast", // Agregar clase personalizada
+        });
+      }
+
+      const notify = (error) => {
+          toast(`❌  ${error} `, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "dark",
+            className: "custom-toast", // Agregar clase personalizada
+          });
+        }
         const [errors, setErrors] = useState({});
         const [valorCausas, setValorCausas] = useState([]);
         const [valorProductos, setValorProductos] = useState([]);
@@ -365,9 +392,20 @@ const aclaraciones = () => {
             fetchColonia();
                },[aclaracion.AclaracionCodigoPostal])
 
-    // const valorMunicipio = [];
-    // const valorCP = [];
-    // const coloniaValue = [];
+        useEffect(() => {
+                if(aclaracion.AclaracionTipoPersona === "1") {//Si es persona física
+                    setAclaracion((prevState) => ({
+                    ...prevState,
+                    AclaracionSexo: "M",
+                    }));
+                } else if(aclaracion.AclaracionTipoPersona === "2") {//Si es persona moral
+                    setAclaracion((prevState) => ({
+                    ...prevState,
+                    AclaracionSexo: "",
+                    }));
+                }
+            },[aclaracion.AclaracionTipoPersona])
+
 
     const handleChange = (e) => {
        
@@ -380,10 +418,12 @@ const aclaraciones = () => {
 
     const enviar = () =>{
          
-                const toIntOrNull = (val) => {
+        const toIntOrNull = (val) => {
         if (val === null || val === "") return null;
         return parseInt(val, 10);
         };
+        
+        setErrors(validarAclaracion(aclaracion));
 
         const aclaracionParsed = {
         ...aclaracion,
@@ -400,11 +440,160 @@ const aclaraciones = () => {
         AclaracionTipoPersona: toIntOrNull(aclaracion.AclaracionTipoPersona),
         AclaracionEdad: toIntOrNull(aclaracion.AclaracionEdad),
         AclaracionNivelAtencion: toIntOrNull(aclaracion.AclaracionNivelAtencion),
-        AclaracionReversa: toIntOrNull(aclaracion.AclaracionReversa)
+        AclaracionReversa: toIntOrNull(aclaracion.AclaracionReversa),
+        AclaracionFechaResolucion: aclaracion.AclaracionFechaResolucion || null,
+        AclaracionFechaNotifiUsuario: aclaracion.AclaracionFechaNotifiUsuario || null,
+        AclaracionMontoReclamado: aclaracion.AclaracionMontoReclamado || 0.00
         };
 
-console.log(aclaracionParsed)
+         if (Object.keys(errors).length === 0) {
+            // No hay errores, puedes enviar el formulario
+           submitForm(aclaracionParsed);
+         }
+
+        // console.log(aclaracionParsed)
     }
+
+     const submitForm = async (aclaracionParsed) => {
+                try {
+                    const response = await fetch(`${API_URL}/Aclaracion/Guardar?Ambiente=${AMBIENTE}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify(aclaracionParsed)
+                    });
+
+                    if(response.ok){
+                         succed(`Folio ${aclaracionParsed.AclaracionFolioAtencion} enviado correctamente`)
+                         setAclaracion({
+                            AclaracionDenominacion: "",
+                            AclaracionSector: "",
+                            AclaracionTrimestre: "",
+                            AclaracionNumero: "1",
+                            AclaracionFolioAtencion: "",
+                            AclaracionEstadoConPend: "1",
+                            AclaracionFechaAclaracion: "",
+                            AclaracionFechaAtencion: "",
+                            AclaracionMedioRecepcionCanal: "",
+                            AclaracionProductoServicio: "",
+                            AclaracionCausaMotivo: "",
+                            AclaracionFechaResolucion: "",
+                            AclaracionFechaNotifiUsuario: "",
+                            AclaracionEntidadFederativa: "",
+                            AclaracionCodigoPostal: "",
+                            AclaracionMunicipioAlcaldia: "",
+                            AclaracionLocalidad: "",
+                            AclaracionColonia: "",
+                            AclaracionMonetario: "NO",
+                            AclaracionMontoReclamado: "",
+                            AclaracionPori: "NO",
+                            AclaracionTipoPersona: "2",
+                            AclaracionSexo: "",
+                            AclaracionEdad: "",
+                            AclaracionNivelAtencion: 0,
+                            AclaracionFolioCondusef: "",
+                            AclaracionReversa: "",
+                            AclaracionOperacionExtranjero: "NO"
+                            });
+                    }
+
+                    if (!response.ok) {
+                        notify("Error al enviar el formulario");
+                        throw new Error("Error en la solicitud");
+                        
+                    }
+
+                    
+                } catch (error) {
+                    console.error("Error al enviar el formulario:", error);
+                }
+            }
+
+    const Prueba = () => {
+        succed("Prueba correcta");
+    }
+
+    const validarAclaracion = (data) => {
+            let errores = {};
+
+            if (!data.AclaracionTrimestre) {
+                errores.AclaracionTrimestre = "El trimestre es obligatorio";
+            }
+            if (!data.AclaracionNumero) {
+                errores.AclaracionNumero = "El número es obligatorio";
+            }
+
+            if(!data.AclaracionFolioAtencion){
+                errores.AclaracionFolioAtencion = "El folio de atención es obligatorio";
+            }
+            if (!data.AclaracionEstadoConPend) {
+                errores.AclaracionEstadoConPend = "El estado con pendiente es obligatorio";
+            }
+            if (!data.AclaracionFechaAclaracion) {
+                errores.AclaracionFechaAclaracion = "La fecha de aclaración es obligatoria";
+            }
+            if (!data.AclaracionFechaAtencion) {
+                errores.AclaracionFechaAtencion = "La fecha de atención es obligatoria";
+            }
+            if (!data.AclaracionMedioRecepcionCanal) {
+                errores.AclaracionMedioRecepcionCanal = "El medio de recepción es obligatorio";
+            }
+            if (!data.AclaracionProductoServicio) {
+                errores.AclaracionProductoServicio = "El producto/servicio es obligatorio";
+            }
+            if (!data.AclaracionCausaMotivo) {
+                errores.AclaracionCausaMotivo = "La causa/motivo es obligatorio";
+            }
+            if (!data.AclaracionEntidadFederativa) {
+                errores.AclaracionEntidadFederativa = "La entidad federativa es obligatoria";
+            }
+            if (!data.AclaracionCodigoPostal) {
+                errores.AclaracionCodigoPostal = "El código postal es obligatorio";
+            }
+            if (!data.AclaracionMunicipioAlcaldia) {
+                errores.AclaracionMunicipioAlcaldia = "El municipio/alcaldía es obligatorio";
+            }
+            if (!data.AclaracionColonia) {
+                errores.AclaracionColonia = "La colonia es obligatoria";
+            }
+            if (!data.AclaracionTipoPersona) {
+                errores.AclaracionTipoPersona = "El tipo de persona es obligatorio";
+            }
+            if(data.AclaracionTipoPersona === "1"){ //Si es persona física
+                if (!data.AclaracionSexo) {
+                    errores.AclaracionSexo = "El sexo es obligatorio";
+                }
+                if(data.AclaracionEdad < 18)
+                        errores.AclaracionEdad = "La edad debe ser mayor a 18 años";
+                if (!data.AclaracionEdad) {
+                    errores.AclaracionEdad = "La edad es obligatoria";
+                }
+            }
+
+            if(data.AclaracionMonetario === "SI"){
+                if (!data.AclaracionMontoReclamado || data.AclaracionMontoReclamado === "0.00" || data.AclaracionMontoReclamado === "0") {
+                    errores.AclaracionMontoReclamado = "El monto reclamado es obligatorio";
+                }
+            }
+
+            if(data.AclaracionEstadoConPend === "2"){//Si es atendida
+                if (!data.AclaracionFechaResolucion) {
+                    errores.AclaracionFechaResolucion = "La fecha de resolución es obligatoria";
+                }
+                if (!data.AclaracionFechaNotifiUsuario) {
+                    errores.AclaracionFechaNotifiUsuario = "La fecha de notificación al usuario es obligatoria";
+                }
+            }
+
+            if (!data.AclaracionNivelAtencion) {
+                errores.AclaracionNivelAtencion = "El nivel de atención es obligatorio";
+            }
+
+            return errores;
+            };
+
      
     return (
         <>
@@ -412,7 +601,7 @@ console.log(aclaracionParsed)
              <div className="Cuestionario">
                 <div>
                     <label>Trimestre</label>
-                    <select className="form-control" name="AclaracionTrimestre" value={aclaracion.AclaracionTrimestre} onChange={(e) => handleChange(e)}>
+                    <select className={`form-control ${errors.AclaracionTrimestre ? "is-invalid" : ""}`} name="AclaracionTrimestre" value={aclaracion.AclaracionTrimestre} onChange={(e) => handleChange(e)}>
                         <option value="">Selecciona un trimestre</option>
                         {Trimestre.map((trimestre) => (
                             <option key={trimestre.value} value={trimestre.value}>
@@ -420,38 +609,49 @@ console.log(aclaracionParsed)
                             </option>
                         ))}
                     </select>
+                     {errors.AclaracionTrimestre && <div className="invalid-feedback">{errors.AclaracionTrimestre}</div>}
                   </div>
 
              <div>
                 <label>Número de aclaraciones</label>
                 <input 
                     type="number" 
-                    className="form-control" 
+                    className={`form-control ${errors.AclaracionNumero ? "is-invalid" : ""}`} 
                     name="AclaracionNumero" 
                     value={aclaracion.AclaracionNumero} 
                     onChange={(e) => handleChange(e)}/>
+                     {errors.AclaracionNumero && <div className="invalid-feedback">{errors.AclaracionNumero}</div>}
              </div>
 
              <div>
                 <label>Folio de atención</label>
                 <input 
-                   
-                    className="form-control"/>
+                    type="text"
+                    name="AclaracionFolioAtencion"
+                    value={aclaracion.AclaracionFolioAtencion}
+                    onChange={(e) => handleChange(e)}
+                    className={`form-control ${errors.AclaracionFolioAtencion ? "is-invalid" : ""}`} />
+                     {errors.AclaracionFolioAtencion && <div className="invalid-feedback">{errors.AclaracionFolioAtencion}</div>}
              </div>
 
              <div>
                 <label>Fecha de la aclaración</label>
                 <input 
                     type="date" 
-                    className="form-control" 
                     name="AclaracionFechaAclaracion" 
+                    className={`form-control ${errors.AclaracionFechaAclaracion ? "is-invalid" : ""}`}
                     value={aclaracion.AclaracionFechaAclaracion} 
                     onChange={(e) => handleChange(e)}/>
+                     {errors.AclaracionFechaAclaracion && <div className="invalid-feedback">{errors.AclaracionFechaAclaracion}</div>}
              </div>
 
              <div>
                 <label>Medio o canal de recepción</label>
-                <select className="form-control" name="AclaracionMedioRecepcionCanal" value={aclaracion.AclaracionMedioRecepcionCanal} onChange={(e) => handleChange(e)}>
+                <select 
+                    className={`form-control ${errors.AclaracionMedioRecepcionCanal ? "is-invalid" : ""}`}
+                    name="AclaracionMedioRecepcionCanal"
+                    value={aclaracion.AclaracionMedioRecepcionCanal} 
+                    onChange={(e) => handleChange(e)}>
                     <option value="">Selecciona un medio o canal</option>
                     {medios_recepcion.map((medio) => (
                         <option key={medio.id_medio} value={medio.id_medio}>
@@ -459,11 +659,15 @@ console.log(aclaracionParsed)
                         </option>
                     ))}
                 </select>
+                 {errors.AclaracionMedioRecepcionCanal && <div className="invalid-feedback">{errors.AclaracionMedioRecepcionCanal}</div>}
              </div>
 
              <div>
                 <label>Nivel de atención o contacto</label>
-                <select className="form-control" name="AclaracionNivelAtencion" value={aclaracion.AclaracionNivelAtencion} onChange={(e) => handleChange(e)}>
+                <select className={`form-control ${errors.AclaracionNivelAtencion ? "is-invalid" : ""}`}
+                        name="AclaracionNivelAtencion" 
+                        value={aclaracion.AclaracionNivelAtencion}
+                        onChange={(e) => handleChange(e)}>
                     <option value="">Selecciona un nivel de atención</option>
                     {niveles_atencion.nivelesDeAtencion.map((nivel) => (
                         <option key={nivel.nivelDeAtencionId} value={nivel.nivelDeAtencionId}>
@@ -471,11 +675,15 @@ console.log(aclaracionParsed)
                         </option>
                     ))}
                 </select>   
+                 {errors.AclaracionNivelAtencion && <div className="invalid-feedback">{errors.AclaracionNivelAtencion}</div>}
              </div>
 
              <div>
                 <label>Producto y/o servicio</label>
-                <select className="form-control" name="AclaracionProductoServicio" value={aclaracion.AclaracionProductoServicio} onChange={(e) => handleChange(e)}>
+                <select className={`form-control ${errors.AclaracionProductoServicio ? "is-invalid" : ""}`}
+                        name="AclaracionProductoServicio" 
+                        value={aclaracion.AclaracionProductoServicio} 
+                        onChange={(e) => handleChange(e)}>
                     <option value="">Selecciona un producto o servicio</option>
                   {valorProductos.map((producto) => (
                       <option key={producto.id} value={producto.codigoProducto}>
@@ -483,11 +691,15 @@ console.log(aclaracionParsed)
                       </option>
                   ))}
                 </select>
+                 {errors.AclaracionProductoServicio && <div className="invalid-feedback">{errors.AclaracionProductoServicio}</div>}
              </div>
 
              <div>
                 <label>Causa o motivo de la aclaración</label>
-                <select className="form-control" name="AclaracionCausaMotivo" value={aclaracion.AclaracionCausaMotivo} onChange={(e) => handleChange(e)}>
+                <select className={`form-control ${errors.AclaracionCausaMotivo ? "is-invalid" : ""}`}
+                        name="AclaracionCausaMotivo" 
+                        value={aclaracion.AclaracionCausaMotivo} 
+                        onChange={(e) => handleChange(e)}>
                     <option value="">Selecciona una causa o motivo</option>
                     {valorCausas.map((causa) => (
                         <option key={causa.id} value={causa.id}>
@@ -495,6 +707,7 @@ console.log(aclaracionParsed)
                         </option>
                     ))}
                 </select>
+                 {errors.AclaracionCausaMotivo && <div className="invalid-feedback">{errors.AclaracionCausaMotivo}</div>}
              </div>
             
             <div>
@@ -502,10 +715,11 @@ console.log(aclaracionParsed)
                 <input
                 name="AclaracionFechaAtencion"
                 type="date"
-                className="form-control"
+                className={`form-control ${errors.AclaracionFechaAtencion ? "is-invalid" : ""}`}
                 value={aclaracion.AclaracionFechaAtencion}
                 onChange={(e) => handleChange(e)}
                 />
+                 {errors.AclaracionFechaAtencion && <div className="invalid-feedback">{errors.AclaracionFechaAtencion}</div>}
             </div>
 
              <div>
@@ -516,16 +730,18 @@ console.log(aclaracionParsed)
             name='AclaracionPori'
             onChange={(e) => handleChange(e)}
             value={"SI"}
-            // className={` ${errors.RecPori ? "is-invalid" : ""}`}
+            className={`${errors.AclaracionPori ? "is-invalid" : ""}`}
             checked={aclaracion.AclaracionPori === 'SI'}/>Si</label>
             <label>
               <input
             type='radio'
             name='AclaracionPori'
             onChange={(e) => handleChange(e)}
+            className={`${errors.AclaracionPori ? "is-invalid" : ""}`}
             value={"NO"}
             // className={` ${errors.RecPori ? "is-invalid" : ""}`}
             checked={aclaracion.AclaracionPori === 'NO'}/>No </label>
+           
         </div>
 
        
@@ -536,19 +752,19 @@ console.log(aclaracionParsed)
             onChange={(e) => handleChange(e)} 
             value={aclaracion.AclaracionEntidadFederativa}
             name='AclaracionEntidadFederativa'
-            className="form-control">
+            className={`form-control ${errors.AclaracionEntidadFederativa ? "is-invalid" : ""}`}>
                 <option value="">Seleccione una opción</option>
                 {entidad_federativa.estados.map(estado => 
                     <option key={estado.claveEdo} value={estado.claveEdo}>{estado.estado}</option>
                 )}
             </select>
-             {/* {errors.RecEntidadFederativa && <div className="invalid-feedback">{errors.RecEntidadFederativa}</div>} */}
+           {errors.AclaracionEntidadFederativa && <div className="invalid-feedback">{errors.AclaracionEntidadFederativa}</div>}
         </div>
 
         <div>
             <label>Municipio o alcaldía</label>
             <select
-            className="form-control"
+            className={`form-control ${errors.AclaracionMunicipioAlcaldia ? "is-invalid" : ""}`}
             name='AclaracionMunicipioAlcaldia'
             onChange={(e) => handleChange(e)} 
             value={aclaracion.AclaracionMunicipioAlcaldia}>
@@ -557,13 +773,13 @@ console.log(aclaracionParsed)
                     <option key={municipio.idMunicipio} value={municipio.idMunicipio}>{municipio.municipio}</option>
                 )}
             </select>
-             {/* {errors.RecMunicipioAlcaldia && <div className="invalid-feedback">{errors.RecMunicipioAlcaldia}</div>} */}
+           {errors.AclaracionMunicipioAlcaldia && <div className="invalid-feedback">{errors.AclaracionMunicipioAlcaldia}</div>}
         </div>
 
         <div>
             <label>Código Postal</label>
             <select 
-            className="form-control"
+            className={`form-control ${errors.AclaracionCodigoPostal ? "is-invalid" : ""}`}
             name='AclaracionCodigoPostal'
             onChange={(e) => handleChange(e)} 
             value={aclaracion.AclaracionCodigoPostal}>
@@ -572,13 +788,13 @@ console.log(aclaracionParsed)
                     <option key={cp.codigoPostal} value={cp.codigoPostal}>{cp.codigoPostal}</option>
                 )}
             </select>
-             {/* {errors.RecCodigoPostal && <div className="invalid-feedback">{errors.RecCodigoPostal}</div>} */}
+           {errors.AclaracionCodigoPostal && <div className="invalid-feedback">{errors.AclaracionCodigoPostal}</div>}
         </div>
 
         <div>
             <label>Colonia</label>
             <select 
-            className="form-control"
+            className={`form-control ${errors.AclaracionColonia ? "is-invalid" : ""}`}
             name='AclaracionColonia'
             value={aclaracion.AclaracionColonia}
             onChange={(e) => handleChange(e)}>
@@ -587,7 +803,7 @@ console.log(aclaracionParsed)
                     <option key={colonia.idColonia} value={colonia.idColonia}>{colonia.colonia1}</option>
                 )}
             </select>
-             {/* {errors.RecColonia && <div className="invalid-feedback">{errors.RecColonia}</div>} */}
+            {errors.AclaracionColonia && <div className="invalid-feedback">{errors.AclaracionColonia}</div>}
         </div>
 
         <div>
@@ -646,9 +862,9 @@ console.log(aclaracionParsed)
                 value={aclaracion.AclaracionEdad}
                 disabled={aclaracion.AclaracionTipoPersona === "2"}
                 onChange={(e) => handleChange(e)}
-                className="form-control"
+                className={`form-control ${errors.AclaracionEdad ? "is-invalid" : ""}`}
                 />
-                {/* {errors.RecEdad && <div className="invalid-feedback">{errors.RecEdad}</div>} */}
+                {errors.AclaracionEdad && <div className="invalid-feedback">{errors.AclaracionEdad}</div>}
             </div>
 
              <div>
@@ -683,9 +899,9 @@ console.log(aclaracionParsed)
             onChange={(e) => handleChange(e)}
             name='AclaracionMontoReclamado'
             disabled={aclaracion.AclaracionMonetario === "NO"}
-            className="form-control"
+            className={`form-control ${errors.AclaracionMontoReclamado ? "is-invalid" : ""}`}
             />
-             {/* {errors.RecMontoReclamado && <div className="invalid-feedback">{errors.RecMontoReclamado}</div>} */}
+             {errors.AclaracionMontoReclamado && <div className="invalid-feedback">{errors.AclaracionMontoReclamado}</div>}
         </div>
                  
         <div>
@@ -715,9 +931,9 @@ console.log(aclaracionParsed)
             onChange={(e) => handleChange(e)}
             value={aclaracion.AclaracionFechaResolucion}
             disabled={aclaracion.AclaracionEstadoConPend === "1"}
-            className="form-control"
+            className={`form-control ${errors.AclaracionFechaResolucion ? "is-invalid" : ""}`}
             name='AclaracionFechaResolucion'/>
-             {/* {errors.RecFechaResolucion && <div className="invalid-feedback">{errors.RecFechaResolucion}</div>} */}
+             {errors.AclaracionTrimestre && <div className="invalid-feedback">{errors.AclaracionTrimestre}</div>}
         </div>
 
         <div>
@@ -729,9 +945,9 @@ console.log(aclaracionParsed)
             onChange={(e) => handleChange(e)}
             value={aclaracion.AclaracionFechaNotifiUsuario}
             disabled={aclaracion.AclaracionEstadoConPend === "1"}
-            className="form-control"
+            className={`form-control ${errors.AclaracionFechaNotifiUsuario ? "is-invalid" : ""}`}
             name='AclaracionFechaNotifiUsuario'/>
-            {/* {errors.RecFechaNotifiUsuario && <div className="invalid-feedback">{errors.RecFechaNotifiUsuario}</div>} */}
+            {errors.AclaracionFechaNotifiUsuario && <div className="invalid-feedback">{errors.AclaracionFechaNotifiUsuario}</div>}
         </div>
 
        
@@ -742,9 +958,9 @@ console.log(aclaracionParsed)
             name='AclaracionFolioCondusef'
             onChange={(e) => handleChange(e)}
             disabled={aclaracion.AclaracionMedioRecepcionCanal !== "6" && aclaracion.AclaracionMedioRecepcionCanal !== "7"}
-            className="form-control"
+            className={`form-control ${errors.AclaracionFolioCondusef ? "is-invalid" : ""}`}
             value={aclaracion.AclaracionFolioCondusef}/>
-             {/* {errors.RecFolioCondusef && <div className="invalid-feedback">{errors.RecFolioCondusef}</div>} */}
+           {errors.AclaracionFolioCondusef && <div className="invalid-feedback">{errors.AclaracionFolioCondusef}</div>}
         </div>
 
         <div>
@@ -797,6 +1013,8 @@ console.log(aclaracionParsed)
                 <button onClick={enviar} className="btn btn-primary">Enviar</button>
              </div>
              </div>
+
+             <ToastContainer />
         </>
     )
 

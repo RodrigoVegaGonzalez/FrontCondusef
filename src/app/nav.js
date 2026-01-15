@@ -40,13 +40,13 @@ const nav = () => {
 
                    <NavDropdown title="Reune" id="basic-nav-dropdown" className="me-3">
                       <NavDropdown.Item href="/Reune/Aclaraciones">Enviar Aclaración</NavDropdown.Item>
-                      <NavDropdown.Item href="/redeco/Consulta">Ver quejas</NavDropdown.Item>
+                      <NavDropdown.Item href="/Reune/Aclaraciones/Ver">Ver Aclaraciones</NavDropdown.Item>
                       <NavDropdown.Divider />
                       <NavDropdown.Item href="/Reune/Consultas">Enviar Consultas</NavDropdown.Item>
-                      <NavDropdown.Item href="/redeco/Consulta">Ver quejas</NavDropdown.Item>
+                      <NavDropdown.Item href="/Reune/Consultas/Ver">Ver Consultas</NavDropdown.Item>
                       <NavDropdown.Divider />
                       <NavDropdown.Item href="/Reune/Reclamaciones">Enviar Reclamaciones</NavDropdown.Item>
-                      <NavDropdown.Item href="/redeco/Consulta">Ver Reclamaciones</NavDropdown.Item>
+                      <NavDropdown.Item href="/Reune/Reclamaciones/Ver">Ver Reclamaciones</NavDropdown.Item>
                   </NavDropdown>
 
                   <Button  className="btn btn-danger me-3" onClick={handleLogout}>Cerrar sesión</Button>
